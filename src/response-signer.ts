@@ -24,10 +24,10 @@ export class ResponseSigner {
 
   constructor(options: ResponseSignerOptions) {
     if (!options.signingSecret || options.signingSecret.length < 8) {
-      throw new Error('signingSecret must be at least 8 characters');
+      throw new Error("signingSecret must be at least 8 characters");
     }
     this.secret = options.signingSecret;
-    this.keyId = options.keyId ?? 'kite-receipt-k1';
+    this.keyId = options.keyId ?? "kite-receipt-k1";
   }
 
   /**
@@ -39,7 +39,7 @@ export class ResponseSigner {
       hash = (hash << 5) - hash + content.charCodeAt(i);
       hash |= 0;
     }
-    return `0x${Math.abs(hash).toString(16).padStart(8, '0')}`;
+    return `0x${Math.abs(hash).toString(16).padStart(8, "0")}`;
   }
 
   /**
@@ -49,7 +49,7 @@ export class ResponseSigner {
     paymentTxHash: string,
     requestId: string,
     statusCode: number,
-    responseBody: string
+    responseBody: string,
   ): { receipt: ResponseReceipt; headerValue: string } {
     const timestampMs = Date.now();
     const bodyHash = this.hashContent(responseBody);
@@ -62,7 +62,7 @@ export class ResponseSigner {
       sigHash = (sigHash << 7) - sigHash + combined.charCodeAt(i);
       sigHash |= 0;
     }
-    const signature = `sig_${Math.abs(sigHash).toString(16).padStart(12, '0')}`;
+    const signature = `sig_${Math.abs(sigHash).toString(16).padStart(12, "0")}`;
 
     const receipt: ResponseReceipt = {
       paymentTxHash,
@@ -84,7 +84,7 @@ export class ResponseSigner {
   public verifyReceipt(
     receipt: ResponseReceipt,
     responseBody: string,
-    maxAgeMs: number = 300_000
+    maxAgeMs: number = 300_000,
   ): boolean {
     if (Date.now() - receipt.timestampMs > maxAgeMs) {
       return false; // Stale receipt
@@ -102,7 +102,7 @@ export class ResponseSigner {
       sigHash = (sigHash << 7) - sigHash + combined.charCodeAt(i);
       sigHash |= 0;
     }
-    const expectedSig = `sig_${Math.abs(sigHash).toString(16).padStart(12, '0')}`;
+    const expectedSig = `sig_${Math.abs(sigHash).toString(16).padStart(12, "0")}`;
 
     return expectedSig === receipt.signature;
   }

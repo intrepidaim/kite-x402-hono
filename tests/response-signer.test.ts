@@ -10,7 +10,7 @@ describe("ResponseSigner", () => {
       "0xtx123",
       "req-456",
       200,
-      '{"status":"ok","data":"hello"}'
+      '{"status":"ok","data":"hello"}',
     );
 
     expect(receipt.paymentTxHash).toBe("0xtx123");
@@ -33,7 +33,12 @@ describe("ResponseSigner", () => {
     const signer = new ResponseSigner({ signingSecret: secret });
     const originalBody = '{"result":100}';
     const tamperedBody = '{"result":999}';
-    const { receipt } = signer.signReceipt("0xtx789", "req-001", 200, originalBody);
+    const { receipt } = signer.signReceipt(
+      "0xtx789",
+      "req-001",
+      200,
+      originalBody,
+    );
 
     const isValid = signer.verifyReceipt(receipt, tamperedBody);
     expect(isValid).toBe(false);
@@ -41,7 +46,9 @@ describe("ResponseSigner", () => {
 
   it("rejects receipt with incorrect signing secret", () => {
     const signerA = new ResponseSigner({ signingSecret: secret });
-    const signerB = new ResponseSigner({ signingSecret: "different-secret-999" });
+    const signerB = new ResponseSigner({
+      signingSecret: "different-secret-999",
+    });
     const body = '{"status":"success"}';
     const { receipt } = signerA.signReceipt("0xtx789", "req-001", 200, body);
 
